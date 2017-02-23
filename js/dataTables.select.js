@@ -400,6 +400,11 @@ function enableMouseSelection ( dt )
 	// Blurable
 	$('body').on( 'click.dtSelect' + dt.table().node().id, function ( e ) {
 		if ( ctx._select.blurable ) {
+			// If the click was on a node outside the DOM, don't blur
+			if ( ! document.body.contains(e.target) ) {
+				return;
+			}
+
 			// Don't blur if the click target or its parents match a specified selector
 			if ( ctx._select.blurableIgnore && $(e.target).closest(ctx._select.blurableIgnore).length ) {
 				return;
