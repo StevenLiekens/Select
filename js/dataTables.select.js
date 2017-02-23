@@ -68,6 +68,7 @@ DataTable.select.init = function ( dt ) {
 	var items = 'row';
 	var style = 'api';
 	var blurable = false;
+	var blurableIgnore;
 	var info = true;
 	var selector = 'td, th';
 	var className = 'selected';
@@ -87,6 +88,10 @@ DataTable.select.init = function ( dt ) {
 	else if ( $.isPlainObject( opts ) ) {
 		if ( opts.blurable !== undefined ) {
 			blurable = opts.blurable;
+		}
+
+		if ( opts.blurableIgnore !== undefined ) {
+			blurableIgnore = opts.blurableIgnore;
 		}
 
 		if ( opts.info !== undefined ) {
@@ -117,6 +122,7 @@ DataTable.select.init = function ( dt ) {
 	dt.select.blurable( blurable );
 	dt.select.info( info );
 	ctx._select.className = className;
+	ctx._select.blurableIgnore = blurableIgnore;
 
 
 	// Sort table based on selected rows. Requires Select Datatables extension
@@ -394,6 +400,11 @@ function enableMouseSelection ( dt )
 	// Blurable
 	$('body').on( 'click.dtSelect' + dt.table().node().id, function ( e ) {
 		if ( ctx._select.blurable ) {
+			// Don't blur if the click target or its parents match a specified selector
+			if ( ctx._select.blurableIgnore && $(e.target).closest(ctx._select.blurableIgnore).length ) {
+				return;
+			}
+
 			// If the click was inside the DataTables container, don't blur
 			if ( $(e.target).parents().filter( dt.table().container() ).length ) {
 				return;
